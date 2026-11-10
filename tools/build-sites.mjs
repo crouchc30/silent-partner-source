@@ -80,8 +80,18 @@ function build(site, { shopName, general, title }) {
       for (const [from, to] of GENERAL_WORDS) t = t.split(from).join(to);
     }
     t = t.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+    if (!general && f.endsWith(".html")) {
+      t = t.replace("<title>", '<meta name="robots" content="noindex, nofollow">\n  <title>');
+    }
     write(site, f, t);
   }
+  // One shop's books have no business being in search results: being findable there serves
+  // nobody who actually uses it and invites people to go poking. The general site is the
+  // opposite -- it is meant to be found.
+  write(site, "robots.txt", general
+    ? "# This site is meant to be found.\nUser-agent: *\nAllow: /\n"
+    : "# One business's books. Shared by link, kept out of search results.\nUser-agent: *\nDisallow: /\n");
+
   copyTree(site, "vendor");
   copyTree(site, "guide");
 
@@ -89,7 +99,10 @@ function build(site, { shopName, general, title }) {
   write(site, "config.js", read("config.js")
     .replace(/shopName: "[^"]*"/, `shopName: ${JSON.stringify(shopName)}`));
 
-  write(site, "netlify.toml", `[build]\n  publish = "."\n\n[[redirects]]\n  from = "/*"\n  to = "/index.html"\n  status = 200\n`);
+  // No catch-all redirect. This is three real pages, not a single-page app: sending every
+  // unknown path to index.html with a 200 would hide a file that failed to deploy behind a
+  // page that looks like it worked.
+  write(site, "netlify.toml", `[build]\n  publish = "."\n`);
   console.log("built sites/" + site);
 }
 

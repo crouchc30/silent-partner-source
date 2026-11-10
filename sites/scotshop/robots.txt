@@ -1,3 +1,3 @@
-# This site is shared by link only. Keep it out of search results.
+# One business's books. Shared by link, kept out of search results.
 User-agent: *
 Disallow: /

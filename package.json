@@ -1,0 +1,9 @@
+{
+  "name": "silent-partner-tools",
+  "private": true,
+  "description": "Only the command-line tools used to deploy the two sites. The sites themselves have no build step and no dependencies.",
+  "devDependencies": {
+    "netlify-cli": "^27.16.3",
+    "supabase": "^3.1.0"
+  }
+}

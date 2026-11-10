@@ -66,7 +66,7 @@ function copyTree(site, rel) {
   fs.cpSync(from, path.join(ROOT, "sites", site, rel), { recursive: true });
 }
 
-function build(site, { shopName, general, title }) {
+function build(site, { shopName, general, title, supabaseUrl, supabaseAnon }) {
   fs.rmSync(path.join(ROOT, "sites", site), { recursive: true, force: true });
 
   for (const f of SHARED) {
@@ -95,8 +95,11 @@ function build(site, { shopName, general, title }) {
   copyTree(site, "vendor");
   copyTree(site, "guide");
 
-  // Each site talks to its own database. Filled in per site.
+  // Each site talks to its OWN database. Two projects, so one business's books can never
+  // appear in the other's site even if something above this line goes wrong.
   write(site, "config.js", read("config.js")
+    .replace(/supabaseUrl:\s*"[^"]*"/,  `supabaseUrl:  ${JSON.stringify(supabaseUrl)}`)
+    .replace(/supabaseAnon:\s*"[^"]*"/, `supabaseAnon: ${JSON.stringify(supabaseAnon)}`)
     .replace(/shopName: "[^"]*"/, `shopName: ${JSON.stringify(shopName)}`));
 
   // No catch-all redirect. This is three real pages, not a single-page app: sending every
@@ -109,11 +112,15 @@ function build(site, { shopName, general, title }) {
 build("scotshop", {
   shopName: "The Scot Shop",
   general: false,
-  title: "Silent Partner — the Scot Shop",
+  title: "Silent Partner \u2014 the Scot Shop",
+  supabaseUrl:  "https://lanqmvwdmqlgnyarnohz.supabase.co",
+  supabaseAnon: "sb_publishable_0G8AoOfhw-de8KmVgfcWsQ_XUFhGSbG",
 });
 
 build("general", {
   shopName: "My Business",
   general: true,
-  title: "Silent Partner — the back office, handled",
+  title: "Silent Partner \u2014 the back office, handled",
+  supabaseUrl:  "https://ryqbuonpqjrihbeawnsf.supabase.co",
+  supabaseAnon: "sb_publishable_35tn2ziNS8rz6cAIAQxx6A_cwl3rAgE",
 });

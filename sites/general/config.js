@@ -6,8 +6,8 @@
  * must never appear here; it is not used by the site at all.
  */
 window.SP_CONFIG = {
-  supabaseUrl:  "https://lanqmvwdmqlgnyarnohz.supabase.co",
-  supabaseAnon: "sb_publishable_0G8AoOfhw-de8KmVgfcWsQ_XUFhGSbG",
+  supabaseUrl:  "https://ryqbuonpqjrihbeawnsf.supabase.co",
+  supabaseAnon: "sb_publishable_35tn2ziNS8rz6cAIAQxx6A_cwl3rAgE",
 
   // The word that opens the front door for anyone with the link, before they
   // have an account. A doorbell, not a lock -- see docs/SETUP.md.

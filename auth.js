@@ -27,7 +27,11 @@
   }
 
   // ---- the doorbell -------------------------------------------------------
-  function gatePassed() { return localStorage.getItem(GATE_KEY) === "1"; }
+  // A site can switch the doorbell off entirely by leaving linkWord empty, which is what a
+  // site being advertised to strangers wants: making people guess a word before they are even
+  // allowed to see a sign-up form costs real users and stops nobody.
+  function gateNeeded() { return !!String(cfg.linkWord || "").trim(); }
+  function gatePassed() { return !gateNeeded() || localStorage.getItem(GATE_KEY) === "1"; }
   function tryGate(word) {
     const ok = String(word || "").trim().toLowerCase() === String(cfg.linkWord).toLowerCase();
     if (ok) localStorage.setItem(GATE_KEY, "1");
@@ -91,7 +95,7 @@
   }
 
   window.SPAuth = {
-    db, gatePassed, tryGate, signUp, signIn, signOut,
+    db, gateNeeded, gatePassed, tryGate, signUp, signIn, signOut,
     sendReset, setPassword, currentUser, onAuthChange, explain,
   };
 })();

@@ -309,3 +309,113 @@ label.inline select, label.inline input { margin: 0; }
 
 #histTable td:first-child { white-space: nowrap; opacity: 0.8; }
 #histTable td:nth-child(2) { white-space: nowrap; }
+
+.toggle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 18px; margin-top: 8px; }
+.toggle-grid label { font-size: 0.93rem; }
+#nav button.hidden { display: none; }
+
+/* ---------------------------------------------------------------------------
+   The front of the house.
+
+   The card is the first thing anybody sees and it was doing the job of a login
+   box on an internal tool. These sites get shown to people who have never heard
+   of it, so it should look like something that is already running a business,
+   not like a class project: a quieter background, the name set in a serif with
+   the letters opened up, a rule under it, and plenty of air.
+   --------------------------------------------------------------------------- */
+body.locked .lock {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,0.10), transparent 60%),
+    linear-gradient(165deg, #1d3557 0%, #1b4068 48%, #16324f 100%);
+}
+
+.lock-card {
+  max-width: 420px;
+  padding: 38px 36px 32px;
+  border-radius: 18px;
+  box-shadow: 0 28px 70px rgba(8, 22, 40, 0.38), 0 2px 6px rgba(8, 22, 40, 0.14);
+  text-align: left;
+}
+
+/* The monogram sits above the name rather than beside it, centred, smaller and
+   calmer than the old rounded square. */
+.lock-card .lock-logo {
+  width: 42px; height: 42px;
+  margin: 0 auto;
+  border-radius: 11px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 14px rgba(29, 53, 87, 0.3);
+}
+
+.lock-card .wordmark {
+  text-align: center;
+  color: #16304c;
+  font-size: 2rem;
+  margin: 16px 0 0;
+}
+.lock-card .wordmark-sub {
+  text-align: center;
+  position: relative;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+}
+/* A short rule, centred, instead of a full-width border. */
+.lock-card .wordmark-sub::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: 0;
+  width: 44px; height: 1px;
+  transform: translateX(-50%);
+  background: rgba(22, 48, 76, 0.25);
+}
+
+.lock-card p.muted { font-size: 0.92rem; margin: 0 0 4px; }
+.lock-card label { font-size: 0.86rem; font-weight: 600; color: #344054; }
+.lock-card input {
+  margin-top: 5px;
+  padding: 11px 12px;
+  font-size: 0.97rem;
+}
+.lock-card button.wide {
+  margin-top: 4px;
+  padding: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.lock-card .guide-link {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.87rem;
+}
+.lock-card .hint { font-size: 0.8rem; line-height: 1.45; }
+
+@media (max-width: 420px) {
+  .lock-card { padding: 30px 22px 26px; }
+  .lock-card .wordmark { font-size: 1.7rem; }
+}
+
+/* On the front screens the walkthrough link is a footnote, not a second thing to press.
+   A bordered box there reads as "this is the button", which it isn't. */
+.lock-card .guide-link {
+  border: 0;
+  padding: 0;
+  margin-top: 20px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #5a6b80;
+  text-decoration: none;
+  border-top: 1px solid rgba(22, 48, 76, 0.1);
+  padding-top: 16px;
+}
+.lock-card .guide-link:hover { background: transparent; color: var(--brand); text-decoration: underline; }
+
+/* The error line reserves a row whether or not there is an error; it should not
+   also carry the gap that the form's own row spacing already provides. */
+.lock-card .lock-error { min-height: 0; margin: -4px 0 0; }
+.lock-card .lock-error:empty { display: none; }

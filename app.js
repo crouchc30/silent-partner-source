@@ -9,14 +9,12 @@
  */
 
 const STEP_MONTHS = { monthly: 1, quarterly: 3, annual: 12 };
-const DEFAULT_CATS = ["Inventory", "Supplies", "Rent", "Payroll", "Printing", "Taxes", "Software", "Insurance", "Donations", "Other"];
-
-// The Scot Shop's own list, from the October 2026 session with the store manager. Rent, printing,
-// software, insurance and "other" came off: the shop pays no rent or insurance, and printing is
-// part of what the inventory costs. "Taxes" split into the two kinds she actually files, which are
-// unrelated to each other: income tax the shop owes, and sales tax it collects for the state.
-// "Donations" became "distribution", because the Sports Club owns the shop. It isn't a gift.
-const SCOT_CATS = ["Inventory", "Supplies", "Payroll", "Income taxes", "Sales taxes",
+// The Scot Shop's own list, from the October 2026 session with the store manager. The shop pays
+// no rent or insurance, and printing is part of what the inventory costs, so those are not here.
+// "Taxes" is split into the two unrelated kinds she actually files: income tax the shop owes, and
+// sales tax it collects for the state. "Donations" is "distribution", because the Sports Club
+// owns the shop -- the year-end check is its share, not a gift.
+const DEFAULT_CATS = ["Inventory", "Supplies", "Payroll", "Income taxes", "Sales taxes",
   "End-of-year distribution: Sports Club", "End-of-year distribution: management"];
 
 // ---------- dates & money ----------
@@ -82,11 +80,16 @@ function bury(collection, row) {
 // There is no sample data in this site, sealed or otherwise. The only numbers it can ever show
 // are the ones somebody typed in themselves.
 
+// Which pages this business wants. Home, History and Settings are not in here: Home is where
+// the number lives, History is the record, and Settings is how you get any of the others back.
+const DEFAULT_TABS = { afford: true, club: true, mgmt: true, expenses: true, money: true, update: true, pricing: true };
+
 function freshState() {
   return {
     settings: {
       name: "My Business", type: "Retail shop", goal: "", reserve: 1500, horizon: 90, caution: 75,
       big: 1000, dupDays: 3, categories: DEFAULT_CATS.slice(), nextYearInv: 0, mgmtPct: 0,
+      tabs: Object.assign({}, DEFAULT_TABS),
     },
     ledger: [], nextId: 1, cash: [], sales: [], recurring: [], nextRecId: 1,
     mgmt: [], nextMgmtId: 1, deleted: {},
@@ -103,6 +106,8 @@ function normalizeState(st) {
   if (!Array.isArray(st.mgmt)) st.mgmt = [];
   if (!st.nextMgmtId) st.nextMgmtId = st.mgmt.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1;
   if (!st.deleted || typeof st.deleted !== "object") st.deleted = {};
+  // A site that gained a page after these books were made should show it, not hide it.
+  s.tabs = Object.assign({}, DEFAULT_TABS, s.tabs || {});
   // The sample-number walkthrough has been removed. Books that still carry it, from a browser
   // that loaded the demo back when it existed, are emptied the moment they're opened: the whole
   // point of this version is that every figure in it is real. The set-up is kept, so nobody has
@@ -606,6 +611,15 @@ function renderSettings() {
   $("#setName").value = s.name; $("#setType").value = s.type; $("#setGoal").value = s.goal || "";
   $("#setReserve").value = s.reserve; $("#setHorizon").value = s.horizon; $("#setCaution").value = s.caution;
   $("#setBig").value = s.big; $("#setCats").value = s.categories.join(", ");
+  const tabBox = $("#tabToggles");
+  if (tabBox) {
+    const want = s.tabs || DEFAULT_TABS;
+    tabBox.innerHTML = Object.keys(DEFAULT_TABS).map(name => {
+      const btn = document.querySelector(`#nav button[data-tab="${name}"]`);
+      const label = btn ? btn.textContent : name;
+      return `<label class="inline"><input type="checkbox" data-tabtoggle="${name}"${want[name] !== false ? " checked" : ""}> ${esc(label)}</label>`;
+    }).join("");
+  }
   if (session && session.user) $("#setWho").textContent = session.user.email;
   renderMembers();
 }
@@ -623,8 +637,25 @@ async function renderMembers() {
   } catch { ul.innerHTML = ""; }
 }
 
+// Hide the pages this business turned off. If somebody is standing on one when it goes, move
+// them Home rather than leaving them on a page that is no longer in the menu.
+function applyTabs() {
+  const want = state.settings.tabs || DEFAULT_TABS;
+  let movedOff = false;
+  Object.keys(DEFAULT_TABS).forEach(name => {
+    const on = want[name] !== false;
+    const btn = document.querySelector(`#nav button[data-tab="${name}"]`);
+    const sec = document.getElementById("tab-" + name);
+    if (btn) btn.classList.toggle("hidden", !on);
+    if (sec && !on && sec.classList.contains("active")) movedOff = true;
+    if (sec && !on) sec.classList.remove("active");
+  });
+  if (movedOff) showTab("home");
+}
+
 function renderAll() {
   $("#bizName").textContent = state.settings.name;
+  applyTabs();
   renderHome(); renderExpenses(); renderMoney(); renderUpdate(); renderPricing(); renderSettings();
   renderClub(); renderMgmt();
 }
@@ -961,6 +992,15 @@ function startIdleTimer() {
   ["click", "keydown", "mousemove", "touchstart", "scroll"].forEach(ev => document.addEventListener(ev, reset, { passive: true }));
   reset();
 }
+
+document.addEventListener("change", e => {
+  const name = e.target && e.target.dataset && e.target.dataset.tabtoggle;
+  if (!name || !state) return;
+  state.settings.tabs = Object.assign({}, DEFAULT_TABS, state.settings.tabs || {});
+  state.settings.tabs[name] = e.target.checked;
+  noteNext(e.target.checked ? "turned a page back on" : "hid a page", name);
+  save(); applyTabs();
+});
 
 $("#lockBtn").addEventListener("click", lockNow);
 

@@ -95,6 +95,19 @@ create policy history_write on history
     business_id in (select my_business_ids()) and user_id = auth.uid()
   );
 
+
+-- ---------------------------------------------------------------------------
+-- Reach. If the project was made with "automatically expose new tables" off,
+-- the four tables above exist but the site cannot see them. These grants say
+-- a signed-in person may ask; the policies above decide what they get back.
+-- Harmless to run when the setting was on.
+-- ---------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated;
+grant select on businesses, members, books, history to authenticated;
+grant insert on members, books, history to authenticated;
+grant update on books to authenticated;
+grant usage, select on sequence history_id_seq to authenticated;
+
 -- ---------------------------------------------------------------------------
 -- Signing up joins you to the one business this site is for, and creates it
 -- the first time anybody signs up. Runs as the owner so a brand-new account
@@ -106,6 +119,14 @@ language plpgsql security definer set search_path = public
 as $$
 declare bid uuid;
 begin
+  -- This runs as the owner, so it has to do its own checking. Without this line a
+  -- caller with no account at all can reach it and leave a stray business behind,
+  -- and because the join below picks the OLDEST business, that stray would become
+  -- the one everybody signs in to.
+  if auth.uid() is null then
+    raise exception 'you have to be signed in';
+  end if;
+
   select id into bid from businesses order by created_at limit 1;
   if bid is null then
     insert into businesses (name) values (shop_name) returning id into bid;
@@ -150,5 +171,18 @@ end $$;
 grant execute on function save_books(uuid, jsonb, bigint) to authenticated;
 
 -- Let the browser hear about other people's saves as they happen.
-alter publication supabase_realtime add table books;
-alter publication supabase_realtime add table history;
+-- Adding a table that is already in the publication is an error, not a no-op,
+-- so ask first. This whole file runs in one transaction: one such error rolls
+-- back everything above it.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+     where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'books')
+  then execute 'alter publication supabase_realtime add table books'; end if;
+
+  if not exists (
+    select 1 from pg_publication_tables
+     where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'history')
+  then execute 'alter publication supabase_realtime add table history'; end if;
+end $$;

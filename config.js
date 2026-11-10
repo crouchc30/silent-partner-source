@@ -6,12 +6,12 @@
  * must never appear here; it is not used by the site at all.
  */
 window.SP_CONFIG = {
-  supabaseUrl:  "PASTE_PROJECT_URL_HERE",      // https://xxxxxxxx.supabase.co
-  supabaseAnon: "PASTE_ANON_PUBLIC_KEY_HERE",  // the "anon public" key, not "service_role"
+  supabaseUrl:  "https://lanqmvwdmqlgnyarnohz.supabase.co",
+  supabaseAnon: "sb_publishable_0G8AoOfhw-de8KmVgfcWsQ_XUFhGSbG",
 
   // The word that opens the front door for anyone with the link, before they
   // have an account. A doorbell, not a lock -- see docs/SETUP.md.
   linkWord: "grassmere",
 
-  shopName: "My Business",
+  shopName: "The Scot Shop",
 };

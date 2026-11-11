@@ -15,7 +15,12 @@ import fs from "node:fs";
 import path from "node:path";
 import net from "node:net";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// Which copy of the site to photograph. The two built sites use different words for the
+// same pages -- one says "Sports Club check", the other "Year-end payout" -- so each needs
+// pictures of itself. Without this the general site's walkthrough shows the Scot Shop.
+const HERE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = process.argv[2] ? path.resolve(process.argv[2]) : HERE;
+const GENERAL = /general/.test(ROOT);
 const OUT = path.join(ROOT, "guide", "img");
 const CHROME = process.env.CHROME_PATH || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PW = "example books passphrase";
@@ -56,13 +61,20 @@ const run = async (expr) => {
 };
 const goto = async () => {
   await send("Page.navigate", { url: `http://localhost:${PORT}/index.html` });
-  for (let i = 0; i < 80; i++) { await sleep(150); if (await run("return document.readyState==='complete' && !!window.SPSync;").catch(() => false)) return; }
+  for (let i = 0; i < 80; i++) { await sleep(150); if (await run("return document.readyState==='complete' && !!window.SPAuth && !!window.SPCloud;").catch(() => false)) return; }
   throw new Error("page did not load");
 };
 
 /* ---------- example books: illustrative only, never shipped in the site ---------- */
 const BOOKS = {
-  settings: {
+  settings: GENERAL ? {
+    name: "Baker Street Books", type: "Retail shop",
+    goal: "paying ourselves properly at the end of the year",
+    reserve: 40000, horizon: 90, caution: 60, big: 1500, dupDays: 3,
+    categories: ["Stock and supplies", "Rent", "Wages", "Taxes", "Marketing",
+      "End-of-year payout: owners", "End-of-year payout: managers"],
+    nextYearInv: 28000, mgmtPct: 20,
+  } : {
     name: "The Scot Shop", type: "Nonprofit-supporting shop",
     goal: "the end-of-year check to the Sports Club",
     reserve: 40000, horizon: 90, caution: 60, big: 1500, dupDays: 3,
@@ -77,17 +89,17 @@ const BOOKS = {
     { week: "2026-10-18", net: 3870 }, { week: "2026-10-25", net: 2960 },
   ],
   recurring: [
-    { id: 1, uid: "r1", name: "Payroll", cat: "Payroll", amount: 5200, due: "2026-11-15", freq: "monthly", notes: "" },
-    { id: 2, uid: "r2", name: "Sales tax to the state", cat: "Sales taxes", amount: 2140, due: "2026-12-20", freq: "quarterly", notes: "" },
+    { id: 1, uid: "r1", name: GENERAL ? "Wages" : "Payroll", cat: GENERAL ? "Wages" : "Payroll", amount: 5200, due: "2026-11-15", freq: "monthly", notes: "" },
+    { id: 2, uid: "r2", name: "Sales tax to the state", cat: GENERAL ? "Taxes" : "Sales taxes", amount: 2140, due: "2026-12-20", freq: "quarterly", notes: "" },
   ],
   ledger: [
-    { id: 1, uid: "l1", date: "2026-10-02", vendor: "Nike", desc: "fall team order", cat: "Inventory", amount: 4200, status: "paid", due: "", note: "", ok: true },
-    { id: 2, uid: "l2", date: "2026-10-09", vendor: "Jostens", desc: "class ring display", cat: "Supplies", amount: 310, status: "paid", due: "", note: "", ok: true },
-    { id: 3, uid: "l3", date: "2026-10-14", vendor: "UPS", desc: "shipping", cat: "Supplies", amount: 86.4, status: "paid", due: "", note: "", ok: true },
-    { id: 4, uid: "l4", date: "2026-10-20", vendor: "Gatorade", desc: "concession stock", cat: "Inventory", amount: 240, status: "paid", due: "", note: "", ok: true },
-    { id: 5, uid: "l5", date: "2026-10-22", vendor: "Gatorade", desc: "concession stock", cat: "Inventory", amount: 240, status: "paid", due: "", note: "", ok: false },
-    { id: 6, uid: "l6", date: "2026-10-24", vendor: "Russell Athletic", desc: "winter order", cat: "Inventory", amount: 2750, status: "unpaid", due: "2026-11-20", note: "", ok: false },
-    { id: 7, uid: "l7", date: "2026-10-25", vendor: "Printing Co", desc: "homecoming banners", cat: "Supplies", amount: null, status: "", due: "", note: "", ok: false },
+    { id: 1, uid: "l1", date: "2026-10-02", vendor: GENERAL ? "Penguin Random House" : "Nike", desc: GENERAL ? "autumn order" : "fall team order", cat: GENERAL ? "Stock and supplies" : "Inventory", amount: 4200, status: "paid", due: "", note: "", ok: true },
+    { id: 2, uid: "l2", date: "2026-10-09", vendor: GENERAL ? "Shelving Co" : "Jostens", desc: GENERAL ? "a new display table" : "class ring display", cat: GENERAL ? "Stock and supplies" : "Supplies", amount: 310, status: "paid", due: "", note: "", ok: true },
+    { id: 3, uid: "l3", date: "2026-10-14", vendor: "UPS", desc: "shipping", cat: GENERAL ? "Stock and supplies" : "Supplies", amount: 86.4, status: "paid", due: "", note: "", ok: true },
+    { id: 4, uid: "l4", date: "2026-10-20", vendor: GENERAL ? "Bean Bros Coffee" : "Gatorade", desc: GENERAL ? "cafe stock" : "concession stock", cat: GENERAL ? "Stock and supplies" : "Inventory", amount: 240, status: "paid", due: "", note: "", ok: true },
+    { id: 5, uid: "l5", date: "2026-10-22", vendor: GENERAL ? "Bean Bros Coffee" : "Gatorade", desc: GENERAL ? "cafe stock" : "concession stock", cat: GENERAL ? "Stock and supplies" : "Inventory", amount: 240, status: "paid", due: "", note: "", ok: false },
+    { id: 6, uid: "l6", date: "2026-10-24", vendor: GENERAL ? "Faber & Faber" : "Russell Athletic", desc: "winter order", cat: GENERAL ? "Stock and supplies" : "Inventory", amount: 2750, status: "unpaid", due: "2026-11-20", note: "", ok: false },
+    { id: 7, uid: "l7", date: "2026-10-25", vendor: "Printing Co", desc: GENERAL ? "window posters" : "homecoming banners", cat: GENERAL ? "Stock and supplies" : "Supplies", amount: null, status: "", due: "", note: "", ok: false },
   ],
   mgmt: [{ id: 1, uid: "m1", name: "Store manager", share: 60 }, { id: 2, uid: "m2", name: "Assistant manager", share: 40 }],
   nextId: 8, nextRecId: 3, nextMgmtId: 3, deleted: {},
@@ -95,10 +107,13 @@ const BOOKS = {
 
 /* ---------- photographing one piece of the page ---------- */
 async function shot(name, selector, pad = 14) {
+  // The whole page is captured regardless of where it is scrolled, so do NOT scroll to the
+  // element: the top bar is sticky, and scrolling down leaves it painted over whatever card
+  // we are trying to photograph. Sit at the top and measure in page coordinates.
   const rect = await run(`
     const el = ${selector};
     if (!el) return null;
-    el.scrollIntoView({block:'start'});
+    window.scrollTo(0, 0);
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     const r = el.getBoundingClientRect();
     return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height };`);
@@ -121,7 +136,7 @@ const tab = async (name) => { await run(`document.querySelector('[data-tab=${nam
 let made = 0, missed = 0;
 const take = async (...a) => { (await shot(...a)) ? made++ : missed++; };
 
-console.log("Photographing the site\n");
+console.log(`Photographing ${GENERAL ? "the general site" : "the Scot Shop site"}\n`);
 
 // --- the lock screen, before anything is open ---
 await goto();
@@ -129,17 +144,34 @@ await run("localStorage.clear(); return true;");
 await goto();
 await take("lock-screen", "document.querySelector('#lock .lock-card')", 18);
 
-// --- seal the example books, then open them ---
+// --- open the example books without a database ------------------------------
+// The site normally signs in against Supabase. These pictures must be the same every time
+// they are taken and must not touch anybody's real books, so the two things that talk to the
+// server are replaced with ones that answer out of this file, and the example books are put
+// straight into the page. Nothing here ships: it lives only in this browser, for one run.
 await run(`
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const key = await deriveKey(${JSON.stringify(PW)}, salt);
-  const v = await sealVault(key, salt, ${JSON.stringify(BOOKS)});
-  v.savedAt = new Date().toISOString();
-  localStorage.setItem('silentPartner.vault', JSON.stringify(v));
+  window.SPCloud = {
+    join:    async () => "example",
+    load:    async () => null,
+    save:    async () => 1,
+    note:    async () => {},
+    members: async () => ([{ email: "mollie@example.com", joined_at: "2026-05-02T14:10:00Z" },
+                           { email: "shelly@example.com", joined_at: "2026-05-02T16:40:00Z" }]),
+    history: async () => ([
+      { email: "mollie@example.com", action: "added an expense",        detail: "Nike $1,240.00",        at: "2026-05-14T15:02:00Z" },
+      { email: "shelly@example.com", action: "marked an expense paid",  detail: "#38 Printing $410.00",  at: "2026-05-14T11:47:00Z" },
+      { email: "mollie@example.com", action: "added a bank balance",    detail: "$41,880.00 on 2026-05-13", at: "2026-05-13T09:15:00Z" },
+      { email: "shelly@example.com", action: "signed in",               detail: null,                    at: "2026-05-13T08:58:00Z" },
+      { email: "mollie@example.com", action: "changed the settings",    detail: null,                    at: "2026-05-11T17:20:00Z" },
+    ]),
+    businessId: () => "example", version: () => 1, watch: () => {},
+  };
+  session = { user: { email: "mollie@example.com" } };
+  state = normalizeState(${JSON.stringify(BOOKS)});
+  document.querySelector("#whoBadge").textContent = "mollie@example.com";
+  document.querySelector("#whoBadge").classList.remove("hidden");
+  enterApp();
   return true;`);
-await goto();
-await run(`document.getElementById('unlockPw').value=${JSON.stringify(PW)};
-  document.getElementById('unlockForm').dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})); return true;`);
 for (let i = 0; i < 60; i++) { await sleep(200); if (await run("return !document.body.classList.contains('locked');")) break; }
 await sleep(500);
 
@@ -164,9 +196,9 @@ await take("afford-math", "document.querySelector('#affordResult .card')");
 
 console.log("\nThe year-end checks");
 await tab("club");
-await take("club", card("sports club"));
+await take("club", card(GENERAL ? "end-of-year payout" : "sports club"));
 await tab("mgmt");
-await take("mgmt-split", card("end-of-year distribution: management"));
+await take("mgmt-split", card(GENERAL ? "end-of-year payout: managers" : "end-of-year distribution: management"));
 await take("mgmt-people", card("who gets a check"));
 
 console.log("\nExpenses");
@@ -194,14 +226,14 @@ await take("pricing", card("true cost"));
 console.log("\nSettings");
 await tab("settings");
 await take("settings-business", card("your business"));
-await take("settings-password", card("privacy"));
-await take("settings-sync", card("save to github"));
+await take("settings-account", card("your account"));
+await take("settings-tabs", card("which pages you want"));
 await take("settings-data", card("your data"));
 
-console.log("\nThe shared-password warning");
-await run(`state.sharedPw = true; renderAll(); return true;`);
-await sleep(300);
-await take("banner-shared-password", "document.getElementById('sharedPwBanner')", 8);
+console.log("\nHistory");
+await tab("history");
+await sleep(600);
+await take("history", "document.querySelector('#tab-history')", 10);
 
 console.log(`\n${made} pictures written to guide/img/, ${missed} missing`);
 shutdown();

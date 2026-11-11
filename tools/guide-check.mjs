@@ -66,9 +66,12 @@ const imgs = await run(`
   return { total: document.images.length, broken: out };`);
 check(`all ${imgs.total} pictures loaded`, imgs.broken.length === 0, "broken: " + imgs.broken.join(", "));
 check("every picture has alt text for a screen reader", await run(`return [...document.images].every(i => (i.alt||'').trim().length > 0);`));
-check("every picture is marked as an example", await run(`
+// A picture carrying invented figures has to say so on its face. The ones listed below are
+// of the furniture -- the lock screen, the top bar, a settings card -- and have no numbers in
+// them to be mistaken for the shop's own.
+check("every picture with figures in it is marked as an example", await run(`
   const figs = [...document.querySelectorAll('figure.shot')];
-  const unlabelled = figs.filter(f => !f.querySelector('.example-tag') && !/lock-screen|topbar|settings-password|banner-shared|settings-sync|settings-data|settings-business/.test(f.querySelector('img').src));
+  const unlabelled = figs.filter(f => !f.querySelector('.example-tag') && !/lock-screen|topbar|settings-account|settings-tabs|settings-data|settings-business/.test(f.querySelector('img').src));
   return unlabelled.length === 0;`));
 
 console.log("\nMoving through it");

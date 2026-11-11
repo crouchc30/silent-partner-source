@@ -43,7 +43,7 @@ slide(A, "How to use Silent Partner", [
     note("Press the big <strong>Next</strong> button at the bottom of the screen, or use the <strong>&rarr;</strong> arrow key on your keyboard. "
          "You can stop whenever you like and come back later &mdash; it remembers the page you were on. "
          "To jump straight to something, press <strong>All the steps</strong> at the top.", "plain", "How to move through this"),
-    p("There are 28 short pages. Reading all of them takes about fifteen minutes."),
+    p("There are %d short pages. Reading all of them takes about fifteen minutes." % len(S)),
 ])
 slide(A, "What this site is for", [
     lede("It keeps track of the shop&rsquo;s money all year, so that &ldquo;how much can we spend, or give away?&rdquo; takes a minute instead of a week."),
@@ -55,7 +55,7 @@ slide(A, "Three things it will never do", [
     lede("This matters more than any feature, so it comes first."),
     bullets([
         "<strong>It never moves money.</strong> It cannot reach your bank. It only reads what you type in.",
-        "<strong>It never sends anything.</strong> The weekly update is text you copy and send yourself, if you want to.",
+        "<strong>It never sends anything to anybody.</strong> The weekly update is text you copy and send yourself, if you want to. The only emails it ever sends are to you, about your own account.",
         "<strong>It never decides.</strong> It recommends, and it pushes back when something looks risky. Every decision stays yours.",
     ]),
     note("Every figure it shows can be traced back to something you typed. If a number ever looks wrong, there is a line of working you can read, and it is on the home page.", "tip"),
@@ -63,7 +63,7 @@ slide(A, "Three things it will never do", [
 slide(A, "Your first twenty minutes", [
     lede("Do these five things, in this order. After the second one, the big number on the home page starts being real."),
     steps([
-        "<strong>Set a password only you know.</strong> Covered on the next few pages.",
+        "<strong>Make your account.</strong> Covered on the next few pages.",
         "<strong>Type in your bank balance.</strong> This is the foundation; nothing works properly without it.",
         "<strong>Add the bills that come every month.</strong> Payroll, taxes, anything regular.",
         "<strong>Add the last few weeks of sales.</strong> Eight weeks is plenty.",
@@ -73,38 +73,65 @@ slide(A, "Your first twenty minutes", [
 ])
 
 B = "Opening it"
-slide(B, "Unlocking the site", [
-    lede("Everything in the shop&rsquo;s books is scrambled until the right password is typed in. That is what this screen is for."),
+slide(B, "Getting in the first time", [
+    lede("Two steps, once. After that it is just your email and your password, on any device you like."),
     pic("lock-screen", "The first thing you see.", example=False),
-    steps(["Type the password into the box.", "Press <strong>Unlock</strong>."]),
-    note("Capital letters and extra spaces do not matter. If it will not open, check the <strong>Caps Lock</strong> key first &mdash; that is the usual culprit.", "tip"),
-    note("There is no &ldquo;forgot password&rdquo; button that can rescue you. If the password is lost, nobody can open the books &mdash; not the people who built this, not anyone. "
-         "Write it down and keep it somewhere safe.", "warn"),
-])
-slide(B, "Make the password your own", [
-    lede("The password you were given is known by several people. Before you type in real figures, change it to one only you know."),
-    pic("banner-shared-password", "Until you do, this orange strip appears on every page.", example=False),
     steps([
-        "Press <strong>Settings</strong> along the top.",
-        "Find the box headed <strong>Privacy &amp; password</strong>.",
-        "Type the password you were given into <em>Current password</em>.",
-        "Type your new one into both of the next boxes.",
-        "Press <strong>Change password</strong>.",
+        "Type the <strong>word that came with your link</strong> and press <strong>Continue</strong>. "
+        "Everyone who was sent the link uses the same word.",
+        "Press <strong>Create an account</strong>.",
+        "Put in <strong>your own email</strong> and choose a password. Type the password twice.",
+        "Press <strong>Create account</strong>, then open your email and click the link we send you.",
+        "Come back and <strong>sign in</strong>.",
     ]),
-    pic("settings-password", "Where to do it.", example=False),
-    note("Choose a <strong>phrase</strong>, not a word. Four ordinary words you will remember are far safer than one clever word. "
-         "Write it down and keep it where you keep important papers.", "important"),
-    note("From that moment on, <strong>the password the link came with will not open your books any more</strong>. "
-         "That is the whole point of changing it: a word several people know should not open your figures. "
-         "If you ever type the old one out of habit, the site will say so and nothing at all will happen to your work.", "plain"),
+    note("The word from the link is just the front door &mdash; it is the same for everybody and it is not what protects your figures. "
+         "<strong>Your account is what protects them.</strong> Nobody can see a single number without one.", "plain"),
+    note("Use an email you can actually open. If you ever forget your password, that is where the reset link goes.", "important"),
 ])
-slide(B, "It locks itself", [
-    lede("If the site is left alone for fifteen minutes, it locks again on its own. That way the books are not sitting open on a screen in the shop."),
-    pic("topbar", "The bar along the top. The Lock button is on the right.", example=False),
+slide(B, "Signing in after that", [
+    lede("Your email and your password. Nothing else to remember, and it works on any computer, tablet or phone."),
+    steps([
+        "Open the link.",
+        "Type the word from the link, if it asks.",
+        "Put in your email and password, and press <strong>Sign in</strong>.",
+    ]),
+    note("The books live online now, not on one computer. Sign in on the shop computer, on the laptop at home, on a phone &mdash; "
+         "it is the same set of books, with the same figures, every time.", "plain"),
+])
+slide(B, "Changing your password when you know it", [
+    lede("Settings, at any time. It changes your own account only &mdash; nobody else&rsquo;s sign-in is affected and the books are untouched."),
+    pic("settings-account", "Where to do it.", example=False),
+    note("Choose a <strong>phrase</strong>, not a word. Four ordinary words you will remember beat one clever word you will not.", "important"),
+])
+slide(B, "If you forget your password", [
+    lede("This used to be the end of the world. It is now a two-minute inconvenience."),
+    steps([
+        "On the sign-in screen, press <strong>Forgot your password?</strong>",
+        "Put in your email and press <strong>Email me a reset link</strong>.",
+        "Open the email and click the link.",
+        "Type a new password twice, and press <strong>Save new password</strong>.",
+    ]),
+    note("Nothing in the books is touched by this. You are changing the key to your own account, not the books themselves, "
+         "and nobody else&rsquo;s sign-in changes.", "plain"),
+    note("If the email does not arrive within a few minutes, look in the junk folder. Ask for it again if you need to.", "tip"),
+])
+slide(B, "Two of you, at the same time", [
+    lede("More than one person can have the site open at once, and nobody&rsquo;s typing gets lost."),
     bullets([
-        "Press <strong>Lock</strong> whenever you walk away.",
-        "Nothing is lost when it locks. Everything is saved the moment you type it.",
-        "To get back in, type your password again.",
+        "Everyone makes <strong>their own account</strong>, with their own email and their own password.",
+        "Everyone sees the <strong>same books</strong>, kept up to date as it happens.",
+        "If somebody else changes something while you are looking, the page quietly updates and tells you who did it.",
+        "If you both save at the same moment, <strong>both entries are kept</strong>. Neither one wipes the other.",
+    ]),
+    note("Settings shows you who else has an account on these books, so you can always check.", "tip"),
+])
+slide(B, "Signing out", [
+    lede("Press <strong>Sign out</strong>, on the right of the bar along the top, whenever you walk away from a shared computer."),
+    pic("topbar", "The bar along the top.", example=False),
+    bullets([
+        "Nothing is lost. Every entry is saved the moment you type it.",
+        "If you forget, the site signs you out on its own after an hour of being left alone.",
+        "To get back in, your email and your password.",
     ]),
 ])
 
@@ -275,24 +302,32 @@ slide(F, "Settings: your shop", [
         ("Categories", "Your own list of kinds of spending."),
     ]),
 ])
+slide(F, "History: who did what", [
+    lede("Every sign-in and every change, with a name and a time against it. Anyone who can open the books can read it."),
+    pic("history", "Who did what, newest first."),
+    p("Press <strong>History</strong> along the top. The newest thing is at the top. It will tell you, for instance, that Shelly "
+      "marked an invoice paid on Tuesday afternoon, or that you added a bank balance on Friday."),
+    bullets([
+        "Use the dropdown to show <strong>just one person</strong>.",
+        "Tick <strong>changes only</strong> to hide the sign-ins and see only what was actually altered.",
+        "<strong>Download as a spreadsheet</strong> if you want it on paper or for your accountant.",
+    ]),
+    note("Nothing in History can be edited or deleted, by anybody, including whoever set the site up. "
+         "A record that could be tidied up afterwards would not be worth keeping.", "plain"),
+    note("If a name you do not recognise appears, check <strong>Settings</strong> &mdash; it lists everyone who has an account on these books.", "tip"),
+])
 slide(F, "Keeping a copy", [
-    lede("A backup is one file holding everything, locked with your password. Keep one somewhere safe."),
+    lede("The books live online and are saved as you type. A backup is a copy of your own, in a file, in case you ever want one."),
     pic("settings-data", "At the bottom of Settings."),
     bullets([
-        "<strong>Download locked backup</strong> saves the file. It is safe to email to yourself &mdash; nobody can read it without your password.",
-        "<strong>Restore backup</strong> puts one back. It will ask for the password that was in use when the backup was made.",
+        "<strong>Download a backup</strong> saves everything to one file on this computer.",
+        "<strong>Restore backup</strong> puts one back. It replaces what is there now, for everybody, so it asks first.",
         "<strong>Download expenses</strong> gives you a plain spreadsheet for your accountant.",
     ]),
-    note("The spreadsheet is <strong>not</strong> locked. Anyone who gets that file can read every line of it. The backup file is the safe one to send around.", "warn"),
-])
-slide(F, "Saving somewhere other than this computer", [
-    lede("Optional, and switched off unless somebody sets it up for you."),
-    pic("settings-sync", "The box at the bottom of Settings."),
-    p("Normally the books live in this browser, on this computer. That is private, but it means that if the computer is replaced or the browser is cleared, they are gone."),
-    p("Switched on, the site also keeps a locked copy in a private online store after every change. The books then survive the computer, and two people can work on them at once without losing each other&rsquo;s work."),
-    note("What is stored online is the scrambled file and nothing else &mdash; not your password, and not a single readable figure. "
-         "The site will refuse to switch this on until you have set a password of your own.", "plain"),
-    note("Setting this up is a job for whoever looks after the site, not something you need to do yourself. Ask them for the printed instructions.", "tip"),
+    note("Both of those files are <strong>plain and readable</strong>. Anyone who gets hold of one can read every figure in it. "
+         "Keep them where you would keep a bank statement, and think twice before emailing one.", "warn"),
+    note("You do not need to take a backup to avoid losing work. Your work is saved online the moment you type it, "
+         "and it is still there if this computer is dropped in a puddle. A backup is for having a copy of your own.", "plain"),
 ])
 slide(F, "If something looks wrong", [
     lede("The usual causes, and what to do about them."),
@@ -300,10 +335,12 @@ slide(F, "If something looks wrong", [
         ("The big number looks too low", "Read the working on the home page. Usually a large unpaid bill, or a repeat bill falling inside the window."),
         ("The big number says $0", "Your known bills use up everything above the cushion. The working will name them."),
         ("A number has not changed", "Check whether the expense is waiting under <strong>Needs your OK</strong>. Incomplete entries are left out until they are finished."),
-        ("The password will not work", "Check Caps Lock. Capitals and spaces do not matter, but the letters do."),
-        ("It says the password the link came with no longer works", "That is correct, and it is on purpose. Once you chose your own, that is the only one that opens your books. Nothing has been lost &mdash; type yours instead."),
-        ("Does closing the page lose my work?", "No. Every entry is saved the moment you type it. Close the tab, shut the computer, come back next week: it is all there, behind your password."),
-        ("Something was deleted by mistake", "Restore your most recent backup, under Settings."),
+        ("My password will not work", "Check Caps Lock first. If it still will not, press <strong>Forgot your password?</strong> on the sign-in screen and we will email you a link to set a new one."),
+        ("The word from the link is not enough", "That word only opens the front door. After it you need your own email and password. If you have not made an account yet, press <strong>Create an account</strong>."),
+        ("The reset email has not arrived", "Look in the junk folder. If it is still missing after a few minutes, ask for it again."),
+        ("Somebody changed something I did not expect", "Open <strong>History</strong>. It will tell you who, what, and when."),
+        ("Does closing the page lose my work?", "No. Every entry is saved online the moment you type it. Close the tab, change computers, come back next week: sign in and it is all there."),
+        ("Something was deleted by mistake", "Check <strong>History</strong> to see what went and who removed it, then type it back in. If a lot went at once, restore a backup under Settings."),
         ("The page looks broken", "Close the tab and open the link again. Nothing is lost; everything is saved as you type."),
     ]),
 ])
@@ -316,7 +353,8 @@ slide(F, "The short version", [
         ("Before a meeting", "Use the <strong>Weekly update</strong>, or the working on the home page."),
         ("At the end of the year", "Use the <strong>Sports Club check</strong>."),
         ("Now and then", "Download a backup and keep it somewhere safe."),
-        ("Never lose", "Your password. It is the only way in, and it cannot be reset."),
+        ("If you forget your password", "Press <strong>Forgot your password?</strong> and check your email. It is no longer a disaster."),
+        ("To see who did what", "Open <strong>History</strong>."),
     ]),
     note("And the one rule behind all of it: the site organises, flags and recommends. You decide. It will never move a penny on its own.", "important"),
 ])

@@ -304,8 +304,12 @@ button.wide { width: 100%; padding: 12px; font-size: 15px; }
 .plain-list li:last-child { border-bottom: 0; }
 
 .row.gap { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-label.inline { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+/* The base label stacks its children; these sit on one line, like label.check above. */
+label.inline { display: inline-flex; flex-direction: row; align-items: center; gap: 7px; font-size: 0.9rem; font-weight: 500; }
 label.inline select, label.inline input { margin: 0; }
+label.inline input[type="checkbox"] { width: auto; flex: none; }
+.toggle-grid label { flex-direction: row; align-items: center; gap: 7px; font-weight: 500; }
+.toggle-grid input[type="checkbox"] { width: auto; flex: none; margin: 0; }
 
 #histTable td:first-child { white-space: nowrap; opacity: 0.8; }
 #histTable td:nth-child(2) { white-space: nowrap; }
@@ -419,3 +423,18 @@ body.locked .lock {
    also carry the gap that the form's own row spacing already provides. */
 .lock-card .lock-error { min-height: 0; margin: -4px 0 0; }
 .lock-card .lock-error:empty { display: none; }
+
+/* The menu gained a History tab and the bar gained the name of whoever is signed in, which
+   together push it onto a second line on an ordinary laptop. Rather than fight that, let it
+   wrap and send the account bits to the far right, so the second line reads as a deliberate
+   row of its own instead of two things that fell off the end. */
+#nav { flex: 1 1 auto; align-items: center; }
+#nav #savedBadge { margin-left: auto; }
+#nav #whoBadge:first-of-type { margin-left: auto; }
+#nav #savedBadge ~ #whoBadge { margin-left: 0; }
+#nav #helpLink { margin-right: 4px; }
+
+@media (max-width: 1500px) {
+  nav button { padding: 7px 9px; }
+  #nav #helpLink { font-size: 13px; }
+}

@@ -55,7 +55,7 @@ slide(A, "Three things it will never do", [
     lede("This matters more than any feature, so it comes first."),
     bullets([
         "<strong>It never moves money.</strong> It cannot reach your bank. It only reads what you type in.",
-        "<strong>It never sends anything to anybody.</strong> The weekly update is text you copy and send yourself, if you want to. The only emails it ever sends are to you, about your own account.",
+        "<strong>It never sends anything to anybody.</strong> The weekly update is text you copy and send yourself, if you want to. The only emails it ever sends are codes, to you, about your own account.",
         "<strong>It never decides.</strong> It recommends, and it pushes back when something looks risky. Every decision stays yours.",
     ]),
     note("Every figure it shows can be traced back to something you typed. If a number ever looks wrong, there is a line of working you can read, and it is on the home page.", "tip"),
@@ -81,12 +81,27 @@ slide(B, "Getting in the first time", [
         "Everyone who was sent the link uses the same word.",
         "Press <strong>Create an account</strong>.",
         "Put in <strong>your own email</strong> and choose a password. Type the password twice.",
-        "Press <strong>Create account</strong>, then open your email and click the link we send you.",
-        "Come back and <strong>sign in</strong>.",
+        "Press <strong>Create account</strong>.",
+        "We email you a <strong>code</strong>. Type it into the box on the next screen and press "
+        "<strong>Confirm</strong>.",
     ]),
+    note("A code, not a link. Links get broken by the thing that opens them &mdash; a work inbox that "
+         "strips them, a phone that opens the wrong browser. A row of digits you read and type works "
+         "anywhere, including from a phone screen while you sit at the shop computer.", "plain"),
     note("The word from the link is just the front door &mdash; it is the same for everybody and it is not what protects your figures. "
          "<strong>Your account is what protects them.</strong> Nobody can see a single number without one.", "plain"),
-    note("Use an email you can actually open. If you ever forget your password, that is where the reset link goes.", "important"),
+    note("Use an email you can actually open. If you ever forget your password, that is where the code goes.", "important"),
+])
+slide(B, "The code from the email", [
+    lede("The same screen does two jobs: proving a new email address is yours, and proving it is still yours if the password has gone."),
+    bullets([
+        "It can take <strong>a minute</strong> to arrive. If it has not, look in the junk folder.",
+        "Type it in, or paste it &mdash; <strong>spaces do not matter</strong>, they get tidied up.",
+        "A code stops working after <strong>an hour</strong>.",
+        "<strong>Send me another code</strong> gets a fresh one. The moment you do, the old one stops working, so use the newest email.",
+    ]),
+    note("If it says the code is not right, the usual cause is reading an older email. Codes arrive in "
+         "order and only the last one counts.", "tip"),
 ])
 slide(B, "Signing in after that", [
     lede("Your email and your password. Nothing else to remember, and it works on any computer, tablet or phone."),
@@ -107,13 +122,13 @@ slide(B, "If you forget your password", [
     lede("This used to be the end of the world. It is now a two-minute inconvenience."),
     steps([
         "On the sign-in screen, press <strong>Forgot your password?</strong>",
-        "Put in your email and press <strong>Email me a reset link</strong>.",
-        "Open the email and click the link.",
-        "Type a new password twice, and press <strong>Save new password</strong>.",
+        "Put in your email and press <strong>Email me a code</strong>.",
+        "Type the code from the email and press <strong>Confirm</strong>.",
+        "Pick a new password, twice, and press <strong>Save new password</strong>.",
     ]),
+    p("You are taken straight into the books afterwards. There is nothing else to do."),
     note("Nothing in the books is touched by this. You are changing the key to your own account, not the books themselves, "
          "and nobody else&rsquo;s sign-in changes.", "plain"),
-    note("If the email does not arrive within a few minutes, look in the junk folder. Ask for it again if you need to.", "tip"),
 ])
 slide(B, "Two of you, at the same time", [
     lede("More than one person can have the site open at once, and nobody&rsquo;s typing gets lost."),
@@ -335,9 +350,11 @@ slide(F, "If something looks wrong", [
         ("The big number looks too low", "Read the working on the home page. Usually a large unpaid bill, or a repeat bill falling inside the window."),
         ("The big number says $0", "Your known bills use up everything above the cushion. The working will name them."),
         ("A number has not changed", "Check whether the expense is waiting under <strong>Needs your OK</strong>. Incomplete entries are left out until they are finished."),
-        ("My password will not work", "Check Caps Lock first. If it still will not, press <strong>Forgot your password?</strong> on the sign-in screen and we will email you a link to set a new one."),
+        ("My password will not work", "Check Caps Lock first. If it still will not, press <strong>Forgot your password?</strong> on the sign-in screen and we will email you a code to set a new one."),
         ("The word from the link is not enough", "That word only opens the front door. After it you need your own email and password. If you have not made an account yet, press <strong>Create an account</strong>."),
-        ("The reset email has not arrived", "Look in the junk folder. If it is still missing after a few minutes, ask for it again."),
+        ("The code has not arrived", "Give it a minute, then look in the junk folder. <strong>Send me another code</strong> on that same screen gets a fresh one."),
+        ("It says my code is wrong", "Check you are reading the newest email. Asking for another code stops the one before it from working."),
+        ("It says my code has expired", "Codes last an hour. Press <strong>Send me another code</strong>."),
         ("Somebody changed something I did not expect", "Open <strong>History</strong>. It will tell you who, what, and when."),
         ("Does closing the page lose my work?", "No. Every entry is saved online the moment you type it. Close the tab, change computers, come back next week: sign in and it is all there."),
         ("Something was deleted by mistake", "Check <strong>History</strong> to see what went and who removed it, then type it back in. If a lot went at once, restore a backup under Settings."),
@@ -353,7 +370,7 @@ slide(F, "The short version", [
         ("Before a meeting", "Use the <strong>Weekly update</strong>, or the working on the home page."),
         ("At the end of the year", "Use the <strong>Sports Club check</strong>."),
         ("Now and then", "Download a backup and keep it somewhere safe."),
-        ("If you forget your password", "Press <strong>Forgot your password?</strong> and check your email. It is no longer a disaster."),
+        ("If you forget your password", "Press <strong>Forgot your password?</strong>, type the code we email you, pick a new one. It is no longer a disaster."),
         ("To see who did what", "Open <strong>History</strong>."),
     ]),
     note("And the one rule behind all of it: the site organises, flags and recommends. You decide. It will never move a penny on its own.", "important"),

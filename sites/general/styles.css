@@ -438,3 +438,14 @@ body.locked .lock {
   nav button { padding: 7px 9px; }
   #nav #helpLink { font-size: 13px; }
 }
+
+/* The code out of the email. Wide-spaced and monospaced so a row of digits can be checked
+   against the message at a glance, which is what people actually do. */
+#codeInput {
+  font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+  padding: 12px 10px;
+}
+#codeInput::placeholder { letter-spacing: 0.4em; opacity: 0.3; }

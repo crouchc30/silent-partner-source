@@ -54,19 +54,50 @@
         <div class="lock-links">
           <button type="button" class="link" id="toSignin">I already have an account</button>
         </div>
-        <p class="hint">Use an email you can open. If you ever forget your password, that is where the reset link goes.</p>
+        <p class="hint">Use an email you can open. We’ll send a code there to check it’s yours, and that’s where a reset code would go if you ever forget your password.</p>
       </form>
 
       <!-- 4. forgot password -->
       <form id="forgotForm" class="hidden">
-        <p class="muted">We'll email you a link to set a new password.</p>
+        <p class="muted">We’ll email you a code. Type it in on the next screen and you can pick a new password.</p>
         <label>Email <input type="email" id="fpEmail" autocomplete="username" required></label>
-        <button class="primary wide" type="submit">Email me a reset link</button>
+        <button class="primary wide" type="submit">Email me a code</button>
         <div class="lock-error" id="fpErr"></div>
-        <div class="lock-ok hidden" id="fpOk">Sent. Check that inbox \u2014 the link opens a page where you pick a new password. It may take a minute, and it may land in spam.</div>
+        <div class="lock-ok hidden" id="fpOk">Sent.</div>
         <div class="lock-links">
           <button type="button" class="link" id="backToSignin">Back to sign in</button>
         </div>
+      </form>
+
+
+      <!-- 5. the code from the email. Used both for confirming a new account and for
+           resetting a password, because to the person typing it the job is the same. -->
+      <form id="codeForm" class="hidden">
+        <p class="muted">We’ve emailed a code to <strong id="codeWhere">your email</strong>.
+          Type it in below.</p>
+        <label>Code from the email
+          <input type="text" id="codeInput" inputmode="numeric" autocomplete="one-time-code"
+                 spellcheck="false" placeholder="123456" required>
+        </label>
+        <button class="primary wide" type="submit">Confirm</button>
+        <div class="lock-error" id="codeErr"></div>
+        <div class="lock-ok hidden" id="codeOk"></div>
+        <p class="hint">It can take a minute to arrive, and it may be in the junk folder.
+          The code stops working after an hour.</p>
+        <div class="lock-links">
+          <button type="button" class="link" id="codeResend">Send me another code</button>
+          <button type="button" class="link" id="codeBack">Back to sign in</button>
+        </div>
+      </form>
+
+      <!-- 6. after a reset code checks out, pick the new password -->
+      <form id="newPwForm" class="hidden">
+        <p class="muted">That’s you. Now pick a new password.</p>
+        <label>New password <input type="password" id="npPw" autocomplete="new-password" required minlength="8"></label>
+        <label>Type it again <input type="password" id="npPw2" autocomplete="new-password" required minlength="8"></label>
+        <button class="primary wide" type="submit">Save new password</button>
+        <div class="lock-error" id="npErr"></div>
+        <p class="hint">At least 8 characters. A short phrase you’ll remember beats a complicated word you won’t.</p>
       </form>
 
       <div id="noCrypto" class="hidden callout bad">This browser can't run this site. Open it from its https:// link in a current version of Chrome, Safari, Edge, or Firefox.</div>

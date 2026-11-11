@@ -60,9 +60,45 @@
     try { await db().auth.signOut(); } finally { location.reload(); }
   }
 
-  // The forgot-password mail. Supabase sends it; the link lands on reset.html.
+  /* Codes, not links.
+   *
+   * Some mail readers will not open a link in a message, and a link that has to survive being
+   * forwarded, copied out of a phone and pasted into a different browser is a lot of ways to
+   * fail. A code works anywhere a person can read six characters and type them back.
+   *
+   * The length is whatever the Supabase project is set to -- six to ten digits, and newer
+   * projects default to eight -- so nothing here assumes a number. Anything non-numeric is
+   * stripped, because people paste codes with spaces in them.
+   */
+  function cleanCode(code) { return String(code || "").replace(/\D/g, ""); }
+
+  // GoTrue has taken different names for these over time and the docs disagree with
+  // themselves, so try the specific one and fall back to the generic.
+  async function verifyCode(email, code, kind) {
+    const token = cleanCode(code);
+    const types = kind === "recovery" ? ["recovery", "email"] : ["signup", "email"];
+    let lastErr = null;
+    for (const type of types) {
+      const { data, error } = await db().auth.verifyOtp({ email: email.trim(), token, type });
+      if (!error) return data;
+      lastErr = error;
+      // A wrong or stale code is a real answer; only a complaint about the type is worth retrying.
+      if (!/type/i.test(String(error.message || ""))) break;
+    }
+    throw lastErr;
+  }
+
+  async function resendCode(email, kind) {
+    if (kind === "recovery") return sendReset(email);
+    const { error } = await db().auth.resend({ type: "signup", email: email.trim() });
+    if (error) throw error;
+  }
+
+  // The forgot-password mail. Supabase sends it; with the template below it carries a code.
   async function sendReset(email) {
     const base = location.origin + location.pathname.replace(/[^/]*$/, "");
+    // redirectTo still set, so a link in an older template keeps working for anybody who
+    // already has one in their inbox.
     const { error } = await db().auth.resetPasswordForEmail(email.trim(), {
       redirectTo: base + "reset.html",
     });
@@ -90,12 +126,15 @@
     if (m.includes("password should be")) return "Passwords need to be at least 8 characters. A short phrase works well.";
     if (m.includes("email not confirmed")) return "Check your email and click the link we sent, then sign in.";
     if (m.includes("rate limit") || m.includes("too many")) return "Too many tries just now. Wait a minute and try again.";
+    if (m.includes("expired")) return "That code has expired. Press \u201cSend me another code\u201d below.";
+    if (m.includes("invalid") && m.includes("token")) return "That code isn\u2019t right. Check the newest email \u2014 asking for another makes the old one stop working.";
+    if (m.includes("otp")) return "That code isn\u2019t right, or it has expired. Ask for another below.";
     if (m.includes("failed to fetch") || m.includes("network")) return "Couldn't reach the server. Check the internet connection and try again.";
     return "Something went wrong: " + ((err && err.message) || "unknown error");
   }
 
   window.SPAuth = {
-    db, gateNeeded, gatePassed, tryGate, signUp, signIn, signOut,
+    db, gateNeeded, gatePassed, tryGate, signUp, signIn, signOut, verifyCode, resendCode, cleanCode,
     sendReset, setPassword, currentUser, onAuthChange, explain,
   };
 })();

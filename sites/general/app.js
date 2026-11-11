@@ -1009,7 +1009,7 @@ $("#lockBtn").addEventListener("click", lockNow);
  * Getting in: the link word, then an account.
  * ------------------------------------------------------------------------- */
 const $$ = sel => document.querySelector(sel);
-const SCREENS = ["gateForm", "signinForm", "signupForm", "forgotForm"];
+const SCREENS = ["gateForm", "signinForm", "signupForm", "forgotForm", "codeForm", "newPwForm"];
 function screen(id) {
   SCREENS.forEach(x => { const el = $$("#" + x); if (el) el.classList.toggle("hidden", x !== id); });
   const first = $$("#" + id + " input");
@@ -1054,12 +1054,7 @@ $$("#signupForm").addEventListener("submit", async e => {
   btn.disabled = true; btn.textContent = "Creating\u2026";
   try {
     const { needsConfirm } = await SPAuth.signUp($$("#suEmail").value, pw);
-    if (needsConfirm) {
-      screen("signinForm");
-      $$("#siEmail").value = $$("#suEmail").value;
-      $$("#siErr").textContent = "Account made. Check your email for a link to confirm it, then sign in here.";
-      return;
-    }
+    if (needsConfirm) { askForCode($$("#suEmail").value, "signup"); return; }
     await openBooks();
   } catch (err) {
     $$("#suErr").textContent = SPAuth.explain(err);
@@ -1073,9 +1068,84 @@ $$("#forgotForm").addEventListener("submit", async e => {
   $$("#fpErr").textContent = "";
   try {
     await SPAuth.sendReset($$("#fpEmail").value);
-    $$("#fpOk").classList.remove("hidden");
+    askForCode($$("#fpEmail").value, "recovery");
   } catch (err) { $$("#fpErr").textContent = SPAuth.explain(err); }
-  finally { btn.disabled = false; btn.textContent = "Email me a reset link"; }
+  finally { btn.disabled = false; btn.textContent = "Email me a code"; }
+});
+
+/* ---------------------------------------------------------------------------
+ * The code from the email.
+ *
+ * Both jobs that need one -- proving a new email address is yours, and proving it is still
+ * yours when the password has gone -- are the same screen, because to the person typing it
+ * they are the same act. What differs is only what happens after it checks out.
+ * ------------------------------------------------------------------------- */
+let codeFor = { email: "", kind: "signup" };
+
+function askForCode(email, kind) {
+  codeFor = { email, kind };
+  $$("#codeWhere").textContent = email;
+  $$("#codeInput").value = "";
+  $$("#codeErr").textContent = "";
+  $$("#codeOk").classList.add("hidden");
+  screen("codeForm");
+}
+
+$$("#codeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button[type=submit]");
+  const code = SPAuth.cleanCode($$("#codeInput").value);
+  $$("#codeErr").textContent = "";
+  $$("#codeOk").classList.add("hidden");
+  // Say the obvious thing before spending a round trip on it.
+  if (code.length < 4) { $$("#codeErr").textContent = "That looks too short. The code in the email is the whole row of digits."; return; }
+
+  btn.disabled = true; btn.textContent = "Checking\u2026";
+  try {
+    await SPAuth.verifyCode(codeFor.email, code, codeFor.kind);
+    if (codeFor.kind === "recovery") { screen("newPwForm"); return; }
+    await openBooks();
+  } catch (err) {
+    $$("#codeErr").textContent = SPAuth.explain(err);
+  } finally { btn.disabled = false; btn.textContent = "Confirm"; }
+});
+
+// Typing in the box clears a stale complaint, and a pasted code with spaces in it is fine.
+$$("#codeInput").addEventListener("input", e => {
+  const cleaned = SPAuth.cleanCode(e.target.value);
+  if (e.target.value !== cleaned) e.target.value = cleaned;
+  $$("#codeErr").textContent = "";
+});
+
+$$("#codeResend").addEventListener("click", async () => {
+  const btn = $$("#codeResend");
+  btn.disabled = true; btn.textContent = "Sending\u2026";
+  $$("#codeErr").textContent = "";
+  try {
+    await SPAuth.resendCode(codeFor.email, codeFor.kind);
+    $$("#codeOk").textContent = "Sent. The newest code is the one that works \u2014 any earlier one has stopped.";
+    $$("#codeOk").classList.remove("hidden");
+  } catch (err) { $$("#codeErr").textContent = SPAuth.explain(err); }
+  finally { btn.disabled = false; btn.textContent = "Send me another code"; }
+});
+
+$$("#codeBack").addEventListener("click", () => screen("signinForm"));
+
+$$("#newPwForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const a = $$("#npPw").value, b = $$("#npPw2").value;
+  $$("#npErr").textContent = "";
+  if (a !== b) { $$("#npErr").textContent = "Those two don\u2019t match."; return; }
+  if (a.length < 8) { $$("#npErr").textContent = "At least 8 characters, please."; return; }
+  const btn = e.target.querySelector("button[type=submit]");
+  btn.disabled = true; btn.textContent = "Saving\u2026";
+  try {
+    await SPAuth.setPassword(a);
+    await openBooks();   // the code already signed them in
+  } catch (err) {
+    $$("#npErr").textContent = SPAuth.explain(err);
+    btn.disabled = false; btn.textContent = "Save new password";
+  }
 });
 
 /* ---------------------------------------------------------------------------

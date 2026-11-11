@@ -48,6 +48,9 @@ for (const site of want) {
   } else {
     console.log("  nothing changed");
   }
+  // --force-with-lease refuses when it has never seen the remote, which is every run after
+  // the first in a fresh clone of this source. Fetch so it has something to compare against.
+  spawnSync("git", ["fetch", "-q", "origin", "main"], { cwd: dir });
   run("git", ["push", "-u", "origin", "main", "--force-with-lease"], dir);
   console.log("  pushed");
 
